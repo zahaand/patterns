@@ -126,9 +126,7 @@ public enum EnumSingleton {
 
 // Использование:
 EnumSingleton instance = EnumSingleton.INSTANCE;
-instance.
-
-createContent("My content");
+instance.createContent("My content");
 ```
 
 ---
@@ -197,6 +195,7 @@ Content content = ContentFactoryMethod.createContent(ContentType.TEXT, user);
 
 ```java
 ContentCreatorFactory factory = new ContentCreatorFactory();
+
 ContentCreator textCreator = factory.createTextContentCreator();
 ContentCreator imageCreator = factory.createImageContentCreator();
 ```
@@ -213,10 +212,9 @@ ContentCreator imageCreator = factory.createImageContentCreator();
 
 ```java
 User user = User.builder().name("Иван").email("ivan@mail.ru").build();
-ExternalUser externalUser = new UserToExternalUserAdapter(user);
-externalSystem.
 
-register(externalUser);
+ExternalUser externalUser = new UserToExternalUserAdapter(user);
+externalSystem.register(externalUser);
 ```
 
 ---
@@ -229,9 +227,8 @@ register(externalUser);
 
 ```java
 ContentStorageBridge bridge = new TextContentStorageBridge(storageImpl);
-bridge.
 
-save(textContent);
+bridge.save(textContent);
 ```
 
 ---
@@ -244,15 +241,10 @@ save(textContent);
 
 ```java
 ContentComposite folder = new ContentComposite();
-folder.
+folder.add(textContent);
+folder.add(imageContent);
 
-add(textContent);
-folder.
-
-add(imageContent);
-folder.
-
-display(); // отображает все вложенные элементы
+folder.display(); // отображает все вложенные элементы
 ```
 
 ---
@@ -265,9 +257,8 @@ display(); // отображает все вложенные элементы
 
 ```java
 DisplayableContent encrypted = new EncryptContentDecorator(textContent);
-encrypted.
 
-display(); // выводит зашифрованный текст
+encrypted.display(); // выводит зашифрованный текст
 ```
 
 ---
@@ -280,9 +271,8 @@ display(); // выводит зашифрованный текст
 
 ```java
 ServiceFacade facade = new ServiceFacade(contentService, userService);
-facade.
 
-createAndPublishContent(user, "Hello World",ContentType.TEXT);
+facade.createAndPublishContent(user, "Hello World", ContentType.TEXT);
 ```
 
 ---
@@ -296,6 +286,7 @@ createAndPublishContent(user, "Hello World",ContentType.TEXT);
 
 ```java
 ImageFlyweight flyweight = ImageFlyweight.getInstance();
+
 byte[] img1 = flyweight.getImage("/path/to/image.png");
 byte[] img2 = flyweight.getImage("/path/to/image.png"); // из кэша
 ```
@@ -310,9 +301,8 @@ byte[] img2 = flyweight.getImage("/path/to/image.png"); // из кэша
 
 ```java
 Resource resource = new ResourceProxy(realResource, currentUser);
-resource.
 
-load(); // проверит права перед загрузкой
+resource.load(); // проверит права перед загрузкой
 ```
 
 ---
@@ -328,16 +318,10 @@ load(); // проверит права перед загрузкой
 
 ```java
 ContentHandler chain = new TextContentHandler();
-chain.
+chain.setNext(new ImageContentHandler());
 
-setNext(new ImageContentHandler());
-
-        chain.
-
-handle(textContent);  // обработает TextContentHandler
-chain.
-
-handle(imageContent); // обработает ImageContentHandler
+chain.handle(textContent);  // обработает TextContentHandler
+chain.handle(imageContent); // обработает ImageContentHandler
 ```
 
 ---
@@ -351,18 +335,11 @@ handle(imageContent); // обработает ImageContentHandler
 
 ```java
 ContentCommandInvoker invoker = new ContentCommandInvoker();
-invoker.
+invoker.execute(new AddContentCommand(editor, content));
+invoker.execute(new EditContentCommand(editor, content, newContent));
 
-execute(new AddContentCommand(editor, content));
-        invoker.
-
-execute(new EditContentCommand(editor, content, newContent));
-        invoker.
-
-undo(); // отменяет EditContentCommand
-invoker.
-
-undo(); // отменяет AddContentCommand
+invoker.undo(); // отменяет EditContentCommand
+invoker.undo(); // отменяет AddContentCommand
 ```
 
 ---
@@ -375,13 +352,10 @@ undo(); // отменяет AddContentCommand
 
 ```java
 ContentIterator iterator = new ContentListIterator(contentList);
-while(iterator.
 
-hasNext()){
-Content content = iterator.next();
-    content.
-
-display();
+while(iterator.hasNext()){
+    Content content = iterator.next();
+    content.display();
 }
 ```
 
@@ -395,15 +369,10 @@ display();
 
 ```java
 MessageMediator chat = new ChatMediator();
-chat.
+chat.register(user1);
+chat.register(user2);
 
-register(user1);
-chat.
-
-register(user2);
-chat.
-
-send(user1, "Hello everyone!");
+chat.send(user1, "Hello everyone!");
 ```
 
 ---
@@ -417,15 +386,10 @@ send(user1, "Hello everyone!");
 
 ```java
 UserContactsManager manager = new UserContactsManager();
-manager.
-
-save(user.saveContactsState());       // сохранить состояние
-        user.
-
-setMobilePhone("+7 000 000-00-00");      // изменить
-user.
-
-restoreContactsState(manager.restore()); // восстановить
+manager.save(user.saveContactsState());       // сохранить состояние
+        
+user.setMobilePhone("+7 000 000-00-00");      // изменить
+user.restoreContactsState(manager.restore()); // восстановить
 ```
 
 ---
@@ -439,15 +403,10 @@ restoreContactsState(manager.restore()); // восстановить
 
 ```java
 NewsFeedPublisher publisher = new NewsFeedPublisher();
-publisher.
+publisher.subscribe(observer1);
+publisher.subscribe(observer2);
 
-subscribe(observer1);
-publisher.
-
-subscribe(observer2);
-publisher.
-
-publish(newContent); // уведомит всех подписчиков
+publisher.publish(newContent); // уведомит всех подписчиков
 ```
 
 ---
@@ -460,16 +419,10 @@ publish(newContent); // уведомит всех подписчиков
 
 ```java
 user.setState(new ActiveUserState());
-        user.
+user.performAction(); // действие активного пользователя
 
-performAction(); // действие активного пользователя
-
-user.
-
-setState(new BlockedUserState());
-        user.
-
-performAction(); // действие заблокированного пользователя
+user.setState(new BlockedUserState());
+user.performAction(); // действие заблокированного пользователя
 ```
 
 ---
@@ -483,16 +436,10 @@ performAction(); // действие заблокированного польз
 
 ```java
 ContentProcessingStrategy strategy = new TextContentProcessingStrategy();
-strategy.
+strategy.process(textContent);  // обработает текст
 
-process(textContent);  // обработает текст
-
-strategy =new
-
-ImageContentProcessingStrategy();
-strategy.
-
-process(imageContent); // обработает изображение
+strategy = new ImageContentProcessingStrategy();
+strategy.process(imageContent); // обработает изображение
 ```
 
 ---
@@ -506,10 +453,8 @@ process(imageContent); // обработает изображение
 
 ```java
 ContentProcessor processor = new TextContentProcessor();
-processor.
 
-process(textContent);
-// вызывает: validate() → prepare() → doProcess() → finalize()
+processor.process(textContent); // вызывает: validate() → prepare() → doProcess() → finalize()
 ```
 
 ---
@@ -523,17 +468,9 @@ process(textContent);
 
 ```java
 ContentVisitor visitor = new InfoPrinterContentVisitor();
-textContent.
+textContent.acceptVisitor(visitor);  // выведет информацию о тексте
+imageContent.acceptVisitor(visitor); // выведет информацию об изображении
 
-acceptVisitor(visitor);  // выведет информацию о тексте
-imageContent.
-
-acceptVisitor(visitor); // выведет информацию об изображении
-
-visitor =new
-
-ArchiverContentVisitor();
-textContent.
-
-acceptVisitor(visitor);  // заархивирует текст
+visitor = new ArchiverContentVisitor();
+textContent.acceptVisitor(visitor);  // заархивирует текст
 ```
