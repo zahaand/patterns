@@ -36,7 +36,22 @@ import ru.zahaand.patterns.domain.Content;
  */
 public interface ContentHandler {
 
-    void setNext(ContentHandler handler);
+    /**
+     * Устанавливает следующий обработчик в цепочке и возвращает его для цепочечных вызовов:
+     * <pre>{@code
+     *     handler1.setNext(handler2).setNext(handler3);
+     * }</pre>
+     *
+     * @param handler следующий обработчик
+     * @return переданный обработчик (для цепочечного вызова)
+     */
+    ContentHandler setNext(ContentHandler handler);
 
+    /**
+     * Обрабатывает запрос на обработку контента. Если текущий обработчик
+     * не может обработать запрос, он должен передать его следующему.
+     *
+     * @param content контент для обработки
+     */
     void handle(Content content);
 }

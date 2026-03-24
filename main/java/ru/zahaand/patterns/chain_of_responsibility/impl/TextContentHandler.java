@@ -1,33 +1,40 @@
 package ru.zahaand.patterns.chain_of_responsibility.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import ru.zahaand.patterns.chain_of_responsibility.ContentHandler;
+import ru.zahaand.patterns.chain_of_responsibility.AbstractContentHandler;
 import ru.zahaand.patterns.domain.Content;
 import ru.zahaand.patterns.domain.impl.TextContent;
 
-import static ru.zahaand.patterns.enums.ContentType.*;
+import static ru.zahaand.patterns.enums.ContentType.TEXT;
 
+/**
+ * <h1>Паттерн Chain of Responsibility — Конкретный обработчик текстового контента</h1>
+ *
+ * <p>Обрабатывает запросы типа {@link ru.zahaand.patterns.enums.ContentType#TEXT}.
+ * Наследует от {@link AbstractContentHandler} логику хранения следующего обработчика
+ * и автоматической передачи по цепочке.
+ *
+ * <p>Использует {@code instanceof} с pattern matching (Java 16+)
+ * вместо небезопасного приведения типов, что исключает {@link ClassCastException}.
+ *
+ * @see AbstractContentHandler
+ * @see ImageContentHandler
+ */
 @Slf4j
-@Component
-public class TextContentHandler implements ContentHandler {
-
-    private ContentHandler next;
+public class TextContentHandler extends AbstractContentHandler {
 
     @Override
-    public void setNext(ContentHandler handler) {
-        this.next = handler;
+    protected boolean canHandle(Content content) {
+        return TEXT.equals(content.getContentType());
     }
 
     @Override
-    public void handle(Content content) {
-        if (TEXT.equals(content.getContentType())) {
-            log.info("TEXT content processing...");
-            TextContent textContent = (TextContent) content;
+    protected void doHandle(Content content) {
+        if (content instanceof TextContent textContent) {
+            log.info("TextContentHandler: processing TEXT content id={}", textContent.getId());
             String processedText = textContent.getContent().toUpperCase();
             textContent.setContent(processedText);
-        } else if (next != null) {
-            next.handle(content);
+            log.info("TextContentHandler: text transformed to uppercase: '{}'", processedText);
         }
     }
 }
