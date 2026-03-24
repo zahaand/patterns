@@ -7,7 +7,7 @@ import ru.zahaand.patterns.domain.Content;
 @Slf4j
 public class AddContentCommand implements ContentCommand {
 
-    private Content content;
+    private final Content content;
 
     public AddContentCommand(Content content) {
         this.content = content;
@@ -15,6 +15,14 @@ public class AddContentCommand implements ContentCommand {
 
     @Override
     public void execute() {
-        log.info("Adding CONTENT {}...", content);
+        log.info("AddContentCommand.execute: adding content id={}", content.getId());
+    }
+
+    /**
+     * Отменяет добавление контента (условно удаляет добавленный объект).
+     */
+    @Override
+    public void undo() {
+        log.info("AddContentCommand.undo: removing content id={}", content.getId());
     }
 }

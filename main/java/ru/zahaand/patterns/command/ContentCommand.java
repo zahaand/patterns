@@ -29,5 +29,14 @@ package ru.zahaand.patterns.command;
  */
 public interface ContentCommand {
 
+    /**
+     * Выполняет команду.
+     */
     void execute();
+
+    /**
+     * Отменяет выполнение команды, восстанавливая предыдущее состояние.
+     * Обеспечивает функциональность возврата действий (Ctrl+Z).
+     */
+    void undo();
 }

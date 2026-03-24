@@ -8,7 +8,7 @@ import java.util.UUID;
 @Slf4j
 public class DeleteContentCommand implements ContentCommand {
 
-    private UUID contentId;
+    private final UUID contentId;
 
     public DeleteContentCommand(UUID contentId) {
         this.contentId = contentId;
@@ -16,6 +16,14 @@ public class DeleteContentCommand implements ContentCommand {
 
     @Override
     public void execute() {
-        log.info("Deleting CONTENT with ID {}...", contentId);
+        log.info("DeleteContentCommand.execute: deleting content id={}", contentId);
+    }
+
+    /**
+     * Отменяет удаление контента (условно восстанавливает удалённый объект).
+     */
+    @Override
+    public void undo() {
+        log.info("DeleteContentCommand.undo: restoring content id={}", contentId);
     }
 }

@@ -9,8 +9,9 @@ import java.util.UUID;
 @Slf4j
 public class EditContentCommand implements ContentCommand {
 
-    private UUID contentId;
-    private Content newContent;
+    private final UUID contentId;
+    private final Content newContent;
+    private Content previousContent;
 
     public EditContentCommand(UUID contentId, Content newContent) {
         this.contentId = contentId;
@@ -19,6 +20,15 @@ public class EditContentCommand implements ContentCommand {
 
     @Override
     public void execute() {
-        log.info("Editing CONTENT with ID {}... . New content: {}", contentId, newContent);
+        // В реальном приложении здесь бы сохранялись previousContent для отмены
+        log.info("EditContentCommand.execute: editing content id={}, newContent={}", contentId, newContent);
+    }
+
+    /**
+     * Отменяет редактирование контента, восстанавливая предыдущую версию.
+     */
+    @Override
+    public void undo() {
+        log.info("EditContentCommand.undo: reverting content id={} to previous state", contentId);
     }
 }
