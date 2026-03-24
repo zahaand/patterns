@@ -1,48 +1,37 @@
 package ru.zahaand.patterns.memento;
 
 /**
- * <h1>Паттерн Memento. Снимок</h1>
- * Интерфейс {@code UserContactsMemento} является частью реализации паттерна "Снимок" (Memento).
- * Он предоставляет способ сохранения и восстановления состояния контактной информации пользователя без нарушения инкапсуляции.
- * Паттерн "Снимок" позволяет сохранять внутреннее состояние объекта так, чтобы оно могло быть восстановлено позже,
- * что полезно для реализации функционала отмены изменений или возврата к предыдущему состоянию.
+ * <h1>Паттерн Memento. Снимок — маркерный интерфейс</h1>
  *
- * <p>Паттерн "Снимок" обеспечивает следующие основные преимущества:</p>
+ * <p>Маркерный интерфейс снимка контактных данных пользователя.
+ * Намеренно не содержит публичных методов — это ключевой принцип паттерна Memento.
+ *
+ * <h3>Роли паттерна в данной реализации:</h3>
  * <ul>
- *     <li><strong>Инкапсуляция</strong>: Скрывает детали реализации состояния объекта от клиента.</li>
- *     <li><strong>Гибкость</strong>: Позволяет сохранять и восстанавливать различные версии состояния объекта.</li>
- *     <li><strong>Откат изменений</strong>: Облегчает реализацию механизма отмены действий путем восстановления предыдущих состояний.</li>
+ *     <li><strong>Originator</strong> ({@link ru.zahaand.patterns.domain.User}) — создаёт снимок
+ *         ({@code saveContactsState()}) и восстанавливает из него состояние ({@code restoreContactsState()}).
+ *         Знает о приватной реализации {@code UserContactsMementoImpl} и приводит к ней через {@code instanceof}.</li>
+ *     <li><strong>Memento</strong> (этот интерфейс + приватный record {@code UserContactsMementoImpl} внутри {@code User}) —
+ *         хранит снимок состояния. Данные доступны <em>только</em> Originator'у.</li>
+ *     <li><strong>Caretaker</strong> ({@link UserContactsManager}) — хранит историю снимков,
+ *         но <em>не может читать их данные</em>, так как интерфейс маркерный.</li>
  * </ul>
  *
  * <h3>Пример использования:</h3>
- * <pre>
- *     // Создание объекта пользователя с начальной контактной информацией
- *     User user = new User(...);
- *     UserContactsManager userContactsManager = new UserContactsManager();
+ * <pre>{@code
+ *     User user = new User.UserBuilder(UUID.randomUUID(), "+7 999 000-00-00", "user@mail.ru").build();
+ *     UserContactsManager manager = new UserContactsManager();
  *
- *     // Сохранение начального состояния контактной информации
- *     userContactsManager.saveUserContactsState(user);
- *
- *     // Изменение контактной информации пользователя
- *     user.setEmail("new-email@example.com");
- *     user.setMobilePhone("+1234567890");
- *
- *     // Сохранение измененного состояния контактной информации
- *     userContactsManager.saveUserContactsState(user);
- *
- *     // Восстановление предыдущего состояния контактной информации пользователя
- *     userContactsManager.undoUserContactsState(user);
- * </pre>
- * <p>
- * В этом примере демонстрируется создание объекта {@code User}, сохранение его текущего состояния контактной информации в снимок,
- * изменение этой информации и последующее восстановление предыдущего состояния из сохраненного снимка. Это показывает, как можно использовать паттерн Memento
- * для управления состоянием в контексте изменения данных пользователя.
+ *     manager.saveUserContactsState(user);          // сохраняем снимок
+ *     user.setEmail("new@mail.ru");                 // изменяем
+ *     manager.undoUserContactsState(user);          // восстанавливаем из снимка
+ *     // user.getEmail() == "user@mail.ru"
+ * }</pre>
  *
  * @see UserContactsManager
+ * @see ru.zahaand.patterns.domain.User
  */
 public interface UserContactsMemento {
-
-    String mobilePhone();
-
-    String email();
+    // Маркерный интерфейс — методы доступа к данным намеренно скрыты.
+    // Реализация UserContactsMementoImpl находится внутри класса User (private record).
 }
