@@ -8,6 +8,7 @@ import ru.zahaand.patterns.domain.Content;
 import ru.zahaand.patterns.domain.User;
 import ru.zahaand.patterns.enums.ContentType;
 import ru.zahaand.patterns.model.Image;
+import ru.zahaand.patterns.prototype.EntityPrototype;
 import ru.zahaand.patterns.visitor.ContentVisitor;
 
 @Slf4j
@@ -35,5 +36,24 @@ public class ImageContent extends Content {
     @Override
     public void acceptVisitor(ContentVisitor visitor) {
         visitor.visit(this);
+    }
+
+    /**
+     * Глубокое копирование ImageContent.
+     * Дополнительно к новому UUID (из {@link Content#clone()}) создаёт
+     * новый объект {@link Image} с копией массива байт, чтобы изменение
+     * байт в клоне не влияло на оригинал.
+     *
+     * @return глубокая копия данного {@link ImageContent} с новым UUID и новым объектом Image.
+     */
+    @Override
+    public EntityPrototype clone() {
+        ImageContent cloned = (ImageContent) super.clone();
+        if (image != null) {
+            byte[] originalBytes = image.getContent();
+            byte[] copiedBytes = originalBytes != null ? originalBytes.clone() : null;
+            cloned.image = new Image(image.getFormat(), copiedBytes, image.getPath());
+        }
+        return cloned;
     }
 }

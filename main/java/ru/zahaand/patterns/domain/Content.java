@@ -14,7 +14,7 @@ import java.util.UUID;
 @Slf4j
 @Data
 @NoArgsConstructor
-public abstract class Content implements EntityPrototype, DisplayableContent {
+public abstract class Content implements EntityPrototype, DisplayableContent, Cloneable {
 
     private UUID id;
     private ContentType contentType;
@@ -27,22 +27,31 @@ public abstract class Content implements EntityPrototype, DisplayableContent {
     }
 
     /**
-     * Реализация метода clone интерфейса {@link EntityPrototype}, который является реализацией паттерна Prototype.
-     * Метод предназначен для создания копии объекта класса Content, что позволяет создавать
-     * независимые экземпляры объектов с сохранением их состояния, но без прямого влияния на оригинальные объекты.
-     * <p> Пример использования:
-     * <pre>
-     *     Content originalContent = new Content(ContentType.TEXT, user);
-     *     EntityPrototype clonedContent = originalContent.clone();
-     * </pre>
+     * Реализация метода clone интерфейса {@link EntityPrototype} (паттерн Prototype).
+     * Создаёт глубокую копию объекта: клон получает <strong>новый уникальный идентификатор</strong>
+     * ({@link UUID}), но сохраняет все остальные поля оригинала.
      *
-     * @return новый экземпляр объекта EntityPrototype, который является копией оригинального объекта.
-     * @throws CloneNotSupportedException в случае, если клонирование объекта не может быть выполнено.
+     * <p>Метод работает корректно благодаря реализации интерфейса {@link Cloneable}.
+     * Без {@code implements Cloneable} вызов {@code super.clone()} привёл бы к
+     * {@link CloneNotSupportedException}.
+     *
+     * <p>Пример использования:
+     * <pre>{@code
+     *     TextContent original = new TextContent("Hello", user);
+     *     TextContent clone = (TextContent) original.clone();
+     *     // clone.getId() != original.getId() — у клона новый UUID
+     *     // clone.getContent().equals(original.getContent()) — данные скопированы
+     * }</pre>
+     *
+     * @return новый экземпляр {@link EntityPrototype} — глубокая копия с новым идентификатором.
      */
     @Override
     public EntityPrototype clone() {
         try {
-            return (EntityPrototype) super.clone();
+            Content cloned = (Content) super.clone();
+            // Генерируем новый UUID для клона, чтобы он был независимым объектом
+            cloned.id = UUID.randomUUID();
+            return cloned;
         } catch (CloneNotSupportedException e) {
             log.error("Content clone failed", e);
             throw new RuntimeException("Ошибка клонирования контента: " + e.getMessage(), e);

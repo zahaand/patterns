@@ -153,8 +153,14 @@ public class User implements Observer {
      *                контактной информации пользователя, который необходимо восстановить.
      */
     public void restoreContactsState(UserContactsMemento memento) {
-        this.mobilePhone = memento.mobilePhone();
-        this.email = memento.email();
+        // Только Originator (User) знает о приватной реализации UserContactsMementoImpl.
+        // Caretaker (UserContactsManager) держит лишь маркерный интерфейс и не может читать данные.
+        if (memento instanceof UserContactsMementoImpl impl) {
+            this.mobilePhone = impl.mobilePhone();
+            this.email = impl.email();
+        } else {
+            log.warn("restoreContactsState: unknown memento type {}", memento.getClass().getSimpleName());
+        }
     }
 
     /**

@@ -11,7 +11,7 @@ public class ImageContentData extends ContentData {
     private final ImageFormat format;
     private final String path;
 
-    public ImageContentData(String data, User user, ImageFormat format, String path) {
+    public ImageContentData(Object data, User user, ImageFormat format, String path) {
         super(data, user);
         this.format = format;
         this.path = path;
