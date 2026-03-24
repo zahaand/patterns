@@ -18,7 +18,7 @@ public class ChatMediator implements MessageMediator {
     @Override
     public void registerUser(User user) {
         registeredUsers.put(user.getId(), user);
-        log.info("Пользователь {} зарегистрирован в чате.", user.getName());
+        log.info("ChatMediator: user '{}' registered in chat.", user.getName());
     }
 
     @Override
@@ -26,10 +26,10 @@ public class ChatMediator implements MessageMediator {
 
         if (registeredUsers.containsKey(sender.getId())
                 && registeredUsers.containsKey(receiver.getId())) {
-            log.info("{} отправил сообщение {}: {}", sender.getName(), receiver.getName(), message);
+            log.info("ChatMediator: '{}' sent message to '{}': {}", sender.getName(), receiver.getName(), message);
 
         } else {
-            log.error("Один из пользователей не зарегистрирован в чате.");
+            log.error("ChatMediator: one of the users is not registered in the chat.");
         }
     }
 }
