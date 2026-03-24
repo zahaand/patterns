@@ -1,5 +1,7 @@
 package ru.zahaand.patterns.observer;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,7 @@ import java.util.List;
  * @see Observer
  * @see Subject
  */
+@Slf4j
 public class NewsFeedPublisher implements Subject {
 
     private final List<Observer> subscribers = new ArrayList<>();
@@ -39,15 +42,18 @@ public class NewsFeedPublisher implements Subject {
     @Override
     public void subscribe(Observer observer) {
         subscribers.add(observer);
+        log.info("NewsFeedPublisher: observer subscribed, total subscribers={}", subscribers.size());
     }
 
     @Override
     public void unsubscribe(Observer observer) {
         subscribers.remove(observer);
+        log.info("NewsFeedPublisher: observer unsubscribed, total subscribers={}", subscribers.size());
     }
 
     @Override
     public void publishNews(String message) {
+        log.info("NewsFeedPublisher: publishing news to {} subscribers: '{}'", subscribers.size(), message);
         for (Observer subscriber : subscribers) {
             subscriber.updateNews(message);
         }
